@@ -104,13 +104,10 @@ def main():
         for future in as_completed(futures):
             result = future.result()
             if result:
-                print(Fore.BLUE + f"  [+] {result}")
+                print(Fore.GREEN + f"[+] {result}")
                 found.append(result)
 
     print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete.\n")
-
-    # Optional info removed as per your previous request
-    # print(Fore.CYAN + Style.BRIGHT + "For manual page support, create a man page file `/usr/local/share/man/man1/cathaxor.1` with appropriate content.\n")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1].lower() == "--update":

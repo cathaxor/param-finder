@@ -19,7 +19,7 @@ def banner():
    █▀▀ ▄▀█ ▀█▀ █░█ ▄▀█ ▀▄▀ █▀█ █▀█
    █▄▄ █▀█ ░█░ █▀█ █▀█ █░█ █▄█ █▀▄
 """)
-    print(Fore.YELLOW + Style.BRIGHT + "        OWNER: ABDULLA RAHAMAN49\n")
+    print(Fore.YELLOW + Style.BRIGHT + "        OWNER: ABDULLA RAHAMAN\n")
     print(Fore.CYAN + Style.BRIGHT + "     >>>>>  C A T H A X O R  <<<<<\n")
 
 def normalize_url(url):

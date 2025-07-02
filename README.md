@@ -28,6 +28,6 @@ chmod +x cathaxor.py
 sudo cp cathaxor.py /usr/local/bin/cathaxor
 
 # Run the tool
-
+```
 cathaxor
 Enter target website URL: example.com

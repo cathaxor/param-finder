@@ -17,17 +17,18 @@
 # Clone the repository
 git clone https://github.com/cathaxor/param-finder.git
 cd param-finder
-
+```
 # Install dependencies (use --break-system-packages only if needed)
 pip install --break-system-packages -r requirements.txt
-
+```
 # Make the script executable
 chmod +x cathaxor.py
-
+```
 # Move it to a system-wide location for easy access
 sudo cp cathaxor.py /usr/local/bin/cathaxor
-
-# Run the tool
 ```
+# Run the tool
+
 cathaxor
+```
 Enter target website URL: example.com

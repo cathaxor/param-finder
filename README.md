@@ -23,6 +23,7 @@ cd param-finder
 pip install --break-system-packages -r requirements.txt
 ```
 # Make the script executable
+``
 chmod +x cathaxor.py
 ```
 # Move it to a system-wide location for easy access

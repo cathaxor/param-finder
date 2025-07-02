@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
 import requests
 from colorama import init, Fore, Style
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
+import readline  # for input history and tab completion
 
 # Initialize colorama
 init(autoreset=True)
@@ -54,13 +56,26 @@ def load_wordlist():
     with open(WORDLIST_FILE, "r") as f:
         return [line.strip() for line in f if line.strip()]
 
+def setup_tab_completion(params):
+    def completer(text, state):
+        options = [p for p in params if p.startswith(text)]
+        if state < len(options):
+            return options[state]
+        else:
+            return None
+    readline.parse_and_bind("tab: complete")
+    readline.set_completer(completer)
+
 def main():
     banner()
     download_wordlist()
     params = load_wordlist()
     numeric_params = [param for param in params if is_numeric_param(param)]
 
-    print(Fore.GREEN + f"[+] Loaded {len(numeric_params)} numeric parameters")
+    print(Fore.GREEN + f"[+] Loaded {len(numeric_params)} numeric parameters\n")
+
+    # Setup tab completion for input URL (optional)
+    setup_tab_completion(numeric_params)
 
     target = input(Fore.YELLOW + "Enter target website URL: ").strip()
     url_base = normalize_url(target)
@@ -79,6 +94,11 @@ def main():
                 found.append(result)
 
     print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete.")
+
+    print(Fore.CYAN + Style.BRIGHT + "\nYou can create an alias for this tool by adding this line to your ~/.bashrc or ~/.zshrc:\n")
+    print("    alias cathaxor='/usr/local/bin/cathaxor'\n")
+
+    print(Fore.CYAN + Style.BRIGHT + "For manual page support, create a man page file `/usr/local/share/man/man1/cathaxor.1` with appropriate content.\n")
 
 if __name__ == "__main__":
     main()

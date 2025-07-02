@@ -19,6 +19,7 @@ git clone https://github.com/cathaxor/param-finder.git
 cd param-finder
 ```
 # Install dependencies (use --break-system-packages only if needed)
+```
 pip install --break-system-packages -r requirements.txt
 ```
 # Make the script executable

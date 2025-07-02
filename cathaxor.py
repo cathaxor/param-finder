@@ -95,8 +95,6 @@ def main():
 
     print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete.")
 
-    print(Fore.CYAN + Style.BRIGHT + "\nYou can create an alias for this tool by adding this line to your ~/.bashrc or ~/.zshrc:\n")
-    print("    alias cathaxor='/usr/local/bin/cathaxor'\n")
 
     print(Fore.CYAN + Style.BRIGHT + "For manual page support, create a man page file `/usr/local/share/man/man1/cathaxor.1` with appropriate content.\n")
 

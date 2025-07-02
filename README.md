@@ -17,4 +17,6 @@
 git clone https://github.com/cathaxor/param-finder.git
 cd param-finder
 pip install --break-system-packages -r requirements.txt
-python cathaxor.py
+chmod +x cathaxor.py
+sudo cp cathaxor.py /usr/local/bin/cathaxor
+Then run cathaxor

@@ -5,9 +5,9 @@ import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
-import readline  # for input history and tab completion
+import readline
 
-# Initialize colorama
+
 init(autoreset=True)
 
 WORDLIST_URL = "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/burp-parameter-names.txt"
@@ -74,7 +74,7 @@ def main():
 
     print(Fore.GREEN + f"[+] Loaded {len(numeric_params)} numeric parameters\n")
 
-    # Setup tab completion for input URL (optional)
+   
     setup_tab_completion(numeric_params)
 
     target = input(Fore.YELLOW + "Enter target website URL: ").strip()

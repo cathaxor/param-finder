@@ -9,7 +9,7 @@
 
 ---
 
-## 🔧 Installation
+## 🔧 Installation & Usage
 
 ### Recommended for Kali Linux
 
@@ -27,10 +27,6 @@ chmod +x cathaxor.py
 # Move it to a system-wide location for easy access
 sudo cp cathaxor.py /usr/local/bin/cathaxor
 
-# 🚀 Usage
-Run the tool by typing:
+# Run the tool
 cathaxor
-
 Enter target website URL: example.com
-CATHAXOR will scan and list numeric URL parameters it discovers on the target.
-

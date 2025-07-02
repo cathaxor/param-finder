@@ -6,7 +6,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
 import readline
-
+import subprocess
+import sys
 
 init(autoreset=True)
 
@@ -66,6 +67,20 @@ def setup_tab_completion(params):
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer)
 
+def update_tool():
+    repo_dir = os.path.dirname(os.path.abspath(__file__))
+    print(Fore.YELLOW + "[*] Checking for updates from GitHub...")
+    try:
+        result = subprocess.run(["git", "pull"], cwd=repo_dir, capture_output=True, text=True)
+        print(result.stdout)
+        if "Already up to date." in result.stdout:
+            print(Fore.GREEN + "[+] CATHAXOR is already up to date.")
+        else:
+            print(Fore.GREEN + "[+] Update completed successfully.")
+    except Exception as e:
+        print(Fore.RED + f"[!] Update failed: {e}")
+    sys.exit()
+
 def main():
     banner()
     download_wordlist()
@@ -74,7 +89,6 @@ def main():
 
     print(Fore.GREEN + f"[+] Loaded {len(numeric_params)} numeric parameters\n")
 
-   
     setup_tab_completion(numeric_params)
 
     target = input(Fore.YELLOW + "Enter target website URL: ").strip()
@@ -93,10 +107,13 @@ def main():
                 print(Fore.BLUE + f"  + {result}")
                 found.append(result)
 
-    print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete.")
+    print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete.\n")
 
-
-    print(Fore.CYAN + Style.BRIGHT + "For manual page support, create a man page file `/usr/local/share/man/man1/cathaxor.1` with appropriate content.\n")
+    # Optional info removed as per your previous request
+    # print(Fore.CYAN + Style.BRIGHT + "For manual page support, create a man page file `/usr/local/share/man/man1/cathaxor.1` with appropriate content.\n")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "--update":
+        update_tool()
+    else:
+        main()

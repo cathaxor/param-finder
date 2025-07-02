@@ -14,9 +14,7 @@
 ### Kali Linux (Recommended)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/CATHAXOR.git
-cd CATHAXOR
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python3 cathaxor.py
+git clone https://github.com/cathaxor/param-finder.git
+cd param-finder
+pip install --break-system-packages -r requirements.txt
+python cathaxor.py

@@ -22,8 +22,10 @@ HEADERS = {
 # Display Banner
 def banner():
     print(Fore.MAGENTA + Style.BRIGHT + """
-   █▀▀ ■▀▀ ■▀▀ ▀△ ▀▀ ■▀▀ ■▀▀
-   ▀▄ ▀▄ ▪ ■▄ ▀▄ ▪ ▄■▄▀▀
+  
+░█▀▀█ ─█▀▀█ ▀▀█▀▀ ░█─░█ ─█▀▀█ ▀▄░▄▀ ░█▀▀▀█ ░█▀▀█ 
+░█─── ░█▄▄█ ─░█── ░█▀▀█ ░█▄▄█ ─░█── ░█──░█ ░█▄▄▀ 
+░█▄▄█ ░█─░█ ─░█── ░█─░█ ░█─░█ ▄▀░▀▄ ░█▄▄▄█ ░█─░█
 """)
     print(Fore.YELLOW + Style.BRIGHT + "        CATHAXOR - PARAMETER FINDER TOOL")
     print(Fore.CYAN + Style.BRIGHT + "             OWNER: ABDULLA RAHAMAN\n")

@@ -18,7 +18,6 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
 }
 
-
 # Display Banner
 def banner():
     print(Fore.MAGENTA + Style.BRIGHT + """
@@ -58,11 +57,10 @@ def download_wordlist():
 
 def load_wordlist():
     with open(WORDLIST_FILE, "r") as f:
-        return [line.strip() for line in f if line.strip() and is_numeric_param(line.strip())]
+        return list(set([line.strip() for line in f if line.strip() and is_numeric_param(line.strip())]))
 
 
 def find_pages(base_url):
-    visited = set()
     found_pages = set()
     try:
         res = requests.get(base_url, headers=HEADERS, timeout=10)
@@ -114,6 +112,7 @@ def main():
 
     target = input(Fore.YELLOW + "Enter target website URL: ").strip()
     targets = normalize_url(target)
+    shown_results = set()
 
     for base_url in targets:
         print(Fore.GREEN + f"[*] Connecting to: {base_url}")
@@ -128,8 +127,9 @@ def main():
 
             for future in as_completed(futures):
                 result = future.result()
-                if result:
+                if result and result not in shown_results:
                     print(Fore.GREEN + f"[+] {result}")
+                    shown_results.add(result)
 
     print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete.\n")
 

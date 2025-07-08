@@ -14,7 +14,6 @@
 ### Recommended for Kali Linux
 
 ```bash
-# Clone the repository
 git clone https://github.com/cathaxor/param-finder.git
 cd param-finder
 ```

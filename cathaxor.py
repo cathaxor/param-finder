@@ -97,7 +97,8 @@ def get_session(retries=3, backoff_factor=0.3, pool_maxsize=100):
 
 def normalize_url(url):
     if not url.startswith(('http://', 'https://')):
-        return 'http://' + url
+        # Default to https, fallback to http is possible but https is standard now
+        return 'https://' + url
     return url
 
 def download_wordlist(wordlist_path):
@@ -350,11 +351,16 @@ def main():
         stop_event.set()
         print(Fore.RED + "\n[!] Scan interrupted by user (Ctrl+C). Stopping threads...")
     finally:
-        if args.output and found_params:
-            with open(args.output, "w") as f:
+        if found_params:
+            output_file = args.output
+            if not output_file:
+                domain = urlparse(target_url).netloc.replace(":", "_")
+                output_file = f"cathaxor_{domain}.txt"
+                
+            with open(output_file, "w") as f:
                 for p in found_params:
                     f.write(p + "\n")
-            print(Fore.CYAN + f"\n[+] Results successfully saved to {args.output}")
+            print(Fore.CYAN + f"\n[+] Results successfully saved to {output_file}")
 
         print(Fore.MAGENTA + "\n[CATHAXOR] Scan complete. Happy Hacking!\n")
 

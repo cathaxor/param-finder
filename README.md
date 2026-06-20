@@ -36,9 +36,14 @@ sudo cp cathaxor.py /usr/local/bin/cathaxor
 
 ## Usage
 
-**Basic Scan (Automatic wordlist download & scan)**
+**Fast Scan (Uses top ~110 built-in parameters)**
 ```bash
 python cathaxor.py -u http://example.com
+```
+
+**Deep Scan (Downloads & uses 6400+ SecLists parameters)**
+```bash
+python cathaxor.py -u http://example.com -w big
 ```
 
 **Advanced Scan (50 Threads, Delay 0.2s, Custom Headers, Custom Cookies, Save to File)**
@@ -56,7 +61,7 @@ python cathaxor.py --update
   -h, --help            show this help message and exit
   -u URL, --url URL     Target URL (e.g. http://example.com)
   -w WORDLIST, --wordlist WORDLIST
-                        Wordlist file for parameters (Default: burp-parameter-names.txt)
+                        Wordlist to use: 'small' (built-in ~110 params), 'big' (SecLists 6400 params), or custom file path. (Default: small)
   -t THREADS, --threads THREADS
                         Number of threads (Default: 30)
   -o OUTPUT, --output OUTPUT

@@ -43,7 +43,25 @@ init(autoreset=True)
 stop_event = threading.Event()
 
 WORDLIST_URL = "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/burp-parameter-names.txt"
-DEFAULT_WORDLIST = "burp-parameter-names.txt"
+
+# A highly effective, hand-picked list of top ~110 parameters for fast fuzzing
+SMALL_PARAMS = [
+    "id", "user", "dir", "file", "path", "folder", "doc", "page", "api", "cmd", 
+    "exec", "command", "url", "uri", "link", "src", "target", "dest", "redirect",
+    "next", "view", "show", "debug", "test", "edit", "update", "delete", "remove",
+    "query", "q", "search", "keyword", "filter", "sort", "order", "limit", "offset",
+    "page_no", "lang", "locale", "theme", "style", "template", "layout", "config",
+    "cfg", "setup", "admin", "role", "level", "group", "type", "mode", "action",
+    "do", "func", "method", "class", "obj", "object", "item", "article", "post",
+    "comment", "msg", "message", "txt", "text", "str", "string", "data", "input",
+    "out", "output", "format", "ext", "extension", "download", "upload", "file_name",
+    "filename", "img", "image", "pic", "picture", "photo", "avatar", "profile",
+    "email", "mail", "pass", "password", "pwd", "token", "auth", "key", "secret",
+    "hash", "sig", "signature", "nonce", "state", "code", "ver", "version", "rev",
+    "callback", "cb", "jsonp", "ref", "referer", "referrer", "site", "domain",
+    "host", "ip", "port", "mac", "net", "network", "subnet", "gateway", "dns",
+    "session", "uuid", "guid", "pid", "uid", "sid", "tid", "cid", "qid"
+]
 
 # Modern User-Agents for rotation to bypass basic WAFs
 USER_AGENTS = [
@@ -98,11 +116,15 @@ def load_wordlist(wordlist_path):
     with open(wordlist_path, "r", encoding='utf-8') as f:
         return list(set([line.strip() for line in f if line.strip()]))
 
-def find_pages(session, base_url, headers, cookies):
+def find_pages(session, base_url, headers, cookies, crawl_enabled=False):
     found_pages = set()
     found_pages.add(base_url)
+    
+    if not crawl_enabled:
+        return list(found_pages)
+        
     try:
-        res = session.get(base_url, headers=headers, cookies=cookies, timeout=10, verify=False)
+        res = session.get(base_url, headers=headers, cookies=cookies, timeout=5, verify=False)
         soup = BeautifulSoup(res.text, "html.parser")
         for link in soup.find_all("a", href=True):
             href = link.get('href')
@@ -126,12 +148,12 @@ def evaluate_dynamic_content(session, url, headers, cookies):
     lengths = []
     status_codes = set()
     try:
-        for _ in range(3):
+        for _ in range(2):
             headers["User-Agent"] = random.choice(USER_AGENTS)
-            r = session.get(url, headers=headers, cookies=cookies, timeout=10, verify=False)
+            r = session.get(url, headers=headers, cookies=cookies, timeout=5, verify=False)
             lengths.append(len(r.text))
             status_codes.add(r.status_code)
-            time.sleep(0.5)
+            time.sleep(0.3)
             
         min_len = min(lengths)
         max_len = max(lengths)
@@ -139,7 +161,7 @@ def evaluate_dynamic_content(session, url, headers, cookies):
         # Check if server blindly reflects URL parameters
         dummy_val = f"cathaxordummy{random.randint(1000,9999)}"
         dummy_url = f"{url}?cathaxordummy={dummy_val}"
-        r_dummy = session.get(dummy_url, headers=headers, cookies=cookies, timeout=10, verify=False)
+        r_dummy = session.get(dummy_url, headers=headers, cookies=cookies, timeout=5, verify=False)
         reflects_url = dummy_val in r_dummy.text
 
         return {
@@ -164,7 +186,7 @@ def test_param_url(session, url, param, base_info, headers, cookies, delay):
     headers["User-Agent"] = random.choice(USER_AGENTS)
     
     try:
-        r = session.get(full_url, headers=headers, cookies=cookies, timeout=10, verify=False)
+        r = session.get(full_url, headers=headers, cookies=cookies, timeout=5, verify=False)
         
         # Heuristic 1: Reflection Detection
         if not base_info["reflects_url"] and test_value in r.text:
@@ -229,12 +251,13 @@ def parse_cookies(cookie_string):
 def main():
     parser = argparse.ArgumentParser(description="CatHaxor - Advanced Web Parameter Discovery Tool")
     parser.add_argument("-u", "--url", help="Target URL (e.g. http://example.com)")
-    parser.add_argument("-w", "--wordlist", help=f"Wordlist file for parameters (Default: {DEFAULT_WORDLIST})", default=DEFAULT_WORDLIST)
+    parser.add_argument("-w", "--wordlist", help="Wordlist to use: 'small' (built-in ~110 params), 'big' (SecLists 6400 params), or custom file path. (Default: small)", default="small")
     parser.add_argument("-t", "--threads", help="Number of threads (Default: 30)", type=int, default=30)
     parser.add_argument("-o", "--output", help="Save output to file")
     parser.add_argument("-d", "--delay", help="Delay between requests in seconds (Default: 0)", type=float, default=0)
     parser.add_argument("-H", "--header", help="Custom Header (e.g. -H 'Authorization: Bearer token')", action='append')
     parser.add_argument("-c", "--cookies", help="Custom Cookies (e.g. 'session=123; user=admin')")
+    parser.add_argument("--crawl", action="store_true", help="Crawl the target URL to find other pages and test all of them")
     parser.add_argument("--update", action="store_true", help="Update the tool from GitHub")
     
     banner()
@@ -253,20 +276,31 @@ def main():
     custom_headers = parse_headers(args.header)
     custom_cookies = parse_cookies(args.cookies)
     
-    if args.wordlist == DEFAULT_WORDLIST:
-        download_wordlist(args.wordlist)
-    elif not os.path.exists(args.wordlist):
-        print(Fore.RED + f"[!] Wordlist not found: {args.wordlist}")
-        sys.exit(1)
-
-    print(Fore.YELLOW + f"[*] Loading wordlist: {args.wordlist}")
-    params = load_wordlist(args.wordlist)
-    print(Fore.GREEN + f"[+] Loaded {len(params)} parameters.")
+    if args.wordlist.lower() == "small":
+        params = SMALL_PARAMS
+        print(Fore.GREEN + f"[+] Loaded {len(params)} high-impact parameters (Fast Mode).")
+    elif args.wordlist.lower() == "big":
+        wordlist_file = "burp-parameter-names.txt"
+        download_wordlist(wordlist_file)
+        print(Fore.YELLOW + f"[*] Loading wordlist: {wordlist_file}")
+        params = load_wordlist(wordlist_file)
+        print(Fore.GREEN + f"[+] Loaded {len(params)} parameters.")
+    else:
+        if not os.path.exists(args.wordlist):
+            print(Fore.RED + f"[!] Wordlist not found: {args.wordlist}")
+            sys.exit(1)
+        print(Fore.YELLOW + f"[*] Loading custom wordlist: {args.wordlist}")
+        params = load_wordlist(args.wordlist)
+        print(Fore.GREEN + f"[+] Loaded {len(params)} parameters.")
 
     session = get_session(pool_maxsize=max(100, args.threads * 2))
     
-    print(Fore.YELLOW + f"[*] Crawling target: {target_url}")
-    pages = find_pages(session, target_url, custom_headers, custom_cookies)
+    if args.crawl:
+        print(Fore.YELLOW + f"[*] Crawling target: {target_url}")
+    else:
+        print(Fore.YELLOW + f"[*] Target URL: {target_url} (use --crawl to test all links)")
+        
+    pages = find_pages(session, target_url, custom_headers, custom_cookies, args.crawl)
     print(Fore.CYAN + f"[+] Found {len(pages)} pages to test\n")
 
     found_params = []

@@ -11,6 +11,15 @@ CatHaxor is a professional, multi-threaded Web Parameter Finder and Vulnerabilit
 - **Auto Installer**: Automatically installs required dependencies if not found on the user's PC.
 - **Auto Updater**: Keep the tool up-to-date directly from GitHub without needing git via `--update`.
 
+## Installation
+
+First, clone the repository from GitHub and navigate into the directory:
+
+```bash
+git clone https://github.com/cathaxor/param-finder.git
+cd param-finder
+```
+
 ## Requirements
 The tool will automatically install its dependencies when run for the first time. However, if you want to install them manually:
 ```bash
